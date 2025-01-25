@@ -1,0 +1,387 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    background-color: #f2f2f2;
+    font-family: Helvetica Neue,Helvetica,Arial,sans-serif;
+}
+
+.container {
+    width: 100%;
+    max-width: 750px;
+    margin: 0 auto;
+    background: #fff;
+}
+
+.topbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.topbar img{
+    padding: 0.8rem;
+    cursor: pointer;
+}
+
+.topbar text {
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+}
+
+.searchform {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    height: 2.3rem;
+    background: #e3e4e6;
+    color: #bdbdbd;
+    border-radius: 1rem;
+    margin-right: 1rem;
+}
+
+.searchform img {
+    width: 1.8rem;
+    height: 1.8rem;
+    padding: 0;
+    padding-left: 0.6rem;
+}
+
+.searchform input {
+    border: none;
+    outline: none;
+    width: 85%;
+    height: 1.75rem;
+    font-size: 1rem;
+    margin-left: 0.5rem;
+    color: #333;
+    background: #e3e4e6;
+}
+
+.null {
+    width: 4rem;
+}
+
+.card {
+    position: relative;
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0.1rem;
+    border-left-width: 0;
+    border-color: #e6e6e6;
+    border-style: solid;
+    padding: 1rem;
+    cursor: pointer;
+}
+
+.userinfo {
+    display: flex;
+    flex-direction: row;
+    padding-left: 2rem;
+    width: 100%;
+    cursor: auto;
+}
+
+.avatar img {
+    width: 5rem;
+    height: 5rem;
+    border-radius: 50%;
+}
+
+.user {
+    display: flex;
+    flex-direction: column;
+    padding-left: 1.5rem;
+}
+
+.name {
+    display: flex;
+    flex-direction: row;
+    padding-top: 0.5rem;
+    align-items: center;
+}
+
+.name text {
+    font-size: 1.6rem;
+    color: #333;
+}
+
+.name img {
+    width: 1.75rem;
+    height: 1.75rem;
+}
+
+.createtime {
+    padding-left: 1rem;
+    font-size: 1rem;
+    color: #999;
+}
+
+.bio {
+    padding-top: 0.8rem;
+}
+
+.bio text {
+    font-size: 1rem;
+    color: #999;
+}
+
+.weiboinfo {
+    display: flex;
+    flex-direction: row;
+    padding-top: 1rem;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 auto;
+}
+
+.weiboitem {
+    flex: 1; 
+    text-align: center;
+    padding: 10px; 
+    color: #333;
+    margin: 0 10px; 
+}
+
+.weibotopbar text {
+    font-size: 1rem;
+    color: #999;
+}
+
+.weiboheader {
+    display: flex;
+    justify-content: space-between; /* 将子元素分布在两端 */
+    align-items: center; /* 垂直居中 */
+    padding: 0.5rem;
+}
+
+.writer {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.writeravatar img {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+}
+
+.writeruser {
+    display: flex;
+    flex-direction: column;
+    padding-left: 0.5rem;
+}
+
+.writername {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.writername text {
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.origin text {
+    font-size: 0.9rem;
+    color: #999;
+}
+
+.views {
+    display: flex;
+    border-radius: 0.25rem;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    width: 7rem;
+    height: 2rem;
+    box-shadow: 0.1rem 0.1rem 0.1rem rgba(0, 0, 0, 0.2); /* 阴影效果 */
+}
+
+.views text {
+    font-size: 0.9rem;
+    color: #999
+}
+
+.weibocontent {
+    margin-top: 0.5rem;
+    cursor: auto;
+}
+
+.weibocontent text {
+    font-size: 1.25rem;
+    color: #333;
+}
+
+.weibopics {
+    width: 25rem;
+}
+
+.weibopics ul {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content:left;
+}
+.weibopics li {
+    width: 31%; /* 每行显示3张图片，留一点间隙 */
+    aspect-ratio: 1 / 1; /* 将 li 设置为正方形 */
+    overflow: hidden; /* 隐藏超出部分 */
+    position: relative;
+    padding: 0 .35rem .35rem 0;
+}
+.weibopics img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 保持图片比例并填充整个容器 */
+    object-position: center; /* 截取正中间部分 */
+    display: block;
+}
+
+.weibovideo video {
+    padding-top: 1rem;
+    width: 20rem;
+}
+
+.weibofooter {
+    display: flex;
+    flex-direction: row;
+    align-items: center; 
+    margin-top: 1.2rem;
+}
+
+.footeritem {
+    display: flex;
+    align-items: center;
+}
+
+.footeritem img {
+    margin-right: 0.2rem;
+}
+
+.footeritem text {
+    margin-right: 2rem;
+    color: #a5aeb5;
+}
+
+.footeritem.active {
+    position: relative; /* 为伪元素定位 */
+    
+}
+
+.footeritem.active text {
+    color: #697480;
+}
+
+.footeritem.active::after {
+    content: '';
+    display: block;
+    width: 20%; /* 下划线长度 */
+    height: 0.1rem; /* 下划线厚度 */
+    background-color: #697480; /* 下划线颜色 */
+    position: absolute;
+    bottom: -0.5rem; /* 调整下划线位置，负值表示向下移动 */
+    left: 50%; /* 水平居中 */
+    transform: translateX(-50%); 
+}
+
+.contentitem {
+    display: flex;
+    flex-direction: row;
+}
+
+.contentavatar {
+    margin-right: 0.7rem;
+}
+
+.contentavatar img {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+}
+
+.contentuser {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.contentuser text {
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.content {
+    width: 100%;
+}
+
+.contenttext {
+    margin-top: 0.5rem;
+    cursor: auto;
+}
+
+.contenttext text {
+    font-size: 1.25rem;
+    color: #333;
+}
+
+.contentreply {
+    margin-top: 0.5rem;
+    padding: 0.8rem;
+    background: #f7f7f7;
+}
+
+.contentreply text {
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.replymore {
+    margin-top: 0.5rem;
+}
+
+.replymore text {
+    color: #507daf;
+}
+
+.contentfoot {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.7rem;
+}
+
+.contentfoot text {
+    font-size: 0.9rem;
+    color: #999;
+}
+
+.contentfoot img {
+    width: 1.1rem;
+    height: 1.1rem;
+}
+
+.contentlike {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.contentlike text {
+    margin: 0.2rem;
+}
+
+.showall {
+  height: 1rem;
+  color: #636363;
+  font-size: 1.1rem;
+  text-align: center;
+  cursor: pointer;
+}

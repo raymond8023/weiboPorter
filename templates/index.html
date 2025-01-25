@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.8">
+    <title>本地微博-首页</title>
+    <link rel="stylesheet" href="/templates/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div id="user-list">
+            {% for user in users %}
+            <div class="card" onclick="window.location.href='/profile/{{ user['id'] }}'">
+                <div class="userinfo">
+                    <div class="avatar">
+                        <img src="{{ user['avatar'] }}">
+                    </div>
+                    <div class="user">
+                        <div class="name">
+                            <text>{{ user['nickname'] }}</text>
+                            {% if user['gender'] == 'm' %}
+                            <img src="/templates/img/male.png">
+                            {% else %}
+                            <img src="/templates/img/female.png">
+                            {% endif %}
+                            <div class="createtime">（注册时间：{{ user['registration'] }}）</div>
+                        </div>
+                        {% if user['birthday'] != '' %}
+                        <div class="bio"><text>生日：{{ user['birthday'] }}</text></div>
+                        {% endif %}
+                        {% if user['location'] != '' %}
+                        <div class="bio"><text>位置：{{ user['location'] }}</text></div>
+                        {% endif %}
+                        {% if user['introduction'] != '' %}
+                        <div class="bio"><text>简介：{{ user['introduction'] }}</text></div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="weiboinfo">
+                    <div class="weiboitem">
+                        <div class="itemnumber">{{ user['weibo_count'] }}</div>
+                        <div class="itemname">微博</div>
+                    </div>
+                    <div class="weiboitem">
+                        <div class="itemnumber">{{ user['following_count'] }}</div>
+                        <div class="itemname">关注</div>
+                    </div>
+                    <div class="weiboitem">
+                        <div class="itemnumber">{{ user['follower_count'] }}</div>
+                        <div class="itemname">粉丝</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+
+</html>

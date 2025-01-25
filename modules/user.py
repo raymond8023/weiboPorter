@@ -1,15 +1,25 @@
-from modules.utils import handle_request, retry, download_one_file, sqlite_upsert_object, init_sqlite
+from modules.utils import handle_request, download_one_file, sqlite_upsert_object, init_sqlite
 from modules.config import config
 import os
+from modules.weibo import File
 import sqlite3
 from contextlib import closing
 
 
 class User:
     def __init__(self, id):    # 0:普通用户 1:主用户
-        # 动态添加属性，不需要初始化
+        # 初始化所有固定属性
         self.id = id
-        self.nickname = '未找到昵称'
+        self.nickname = ''
+        self.gender = ''
+        self.registration = ''
+        self.birthday = ''
+        self.location = ''
+        self.introduction = ''
+        self.avatar = ''
+        self.weibo_count = ''
+        self.following_count = ''
+        self.follower_count = ''
 
         # 解析用户信息
         self.get_userinfo()
@@ -17,10 +27,13 @@ class User:
         self.check_user_dir()
         # 初始创建数据库表（如果未创建）
         init_sqlite()
+        # 下载头像，强制覆盖
+        file = File(self.avatar, "avatar")
+        download_one_file(file, force=True)
         # 插入数据库
         sqlite_upsert_object("users", self)
-        # 下载头像，强制覆盖
-        download_one_file(self.avatar, "img", "avatar", force=True)
+        del file.url
+        sqlite_upsert_object("mappings", file, prime_key='file_name')
         print(f"成功获取用户信息: {self.id}_{self.nickname}")
 
     def __str__(self):
@@ -29,8 +42,8 @@ class User:
 
     def check_user_dir(self):
         """检查用户目录"""
-        os.makedirs('./weibo/', exist_ok=True)
-        config.user_dir = f'./weibo/{self.id}_{self.nickname}/'
+        os.makedirs('./weibo', exist_ok=True)
+        config.user_dir = f'./weibo/{self.id}_{self.nickname}'
         # 检查当前的主用户的user_dir是否有相同id的目录，有就改成新名字，没有就新建
         for dir_name in os.listdir('./weibo'):
             dir_path = os.path.join('./weibo', dir_name)
@@ -45,7 +58,7 @@ class User:
     def get_userinfo(self):
         """获取用户信息"""
         url = f'https://m.weibo.cn/api/container/getIndex?containerid=100505{self.id}'
-        result = handle_request(config.cookie, url, 'json')
+        result = handle_request(url, 'json')
         info = result["data"]["userInfo"]
         # 必备字段，认为不可能没有，所以直接取，取不到就报错
         self.nickname = info["screen_name"]
@@ -58,7 +71,7 @@ class User:
         url = f'https://m.weibo.cn/api/container/getIndex?containerid=230283{self.id}_-_INFO'
         zh_list = ["生日", "所在地", "注册时间"]
         en_list = ["birthday", "location", "registration"]
-        result = retry(handle_request, config.cookie, url, 'json')
+        result = handle_request(url, 'json')
         cards = result["data"]["cards"]
         if isinstance(cards, list) and len(cards) > 1:
             card_list = cards[0]["card_group"] + cards[1]["card_group"]

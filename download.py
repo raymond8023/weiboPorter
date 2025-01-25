@@ -17,5 +17,5 @@ def download_one_file(url, file_type, category, force=False):
     except Exception as e:
         print(f'download failed:{url}, {e}')
 
-url = "https://wx3.sinaimg.cn/large/002TLsr9ly8hrvt29nqryj60dw0dw0t902.jpg"
+url = "https://f.video.weibocdn.com/o0/q6EfbvbHlx08lkmdKhu8010412000VJo0E010.mp4?label=mp4_hd&template=540x720.24.0&ori=0&ps=1BThihd3VLAY5R&Expires=1737790192&ssig=%2FnFUGCQm0T&KID=unistore,video"
 download_one_file(url, 'xxx', '')

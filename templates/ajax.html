@@ -1,0 +1,72 @@
+            {% for weibo in weibos %}
+            <div class="card" onclick="window.location.href='/weibo/{{ weibo['id'] }}'">
+                {% if weibo['visibility'] != '' %}
+                <div class="weibotopbar"><text>{{ weibo['visibility'] }}</text></div>
+                {% endif %}
+                <div class="weiboheader">
+                    <div class="writer">
+                        <div class="writeravatar">
+                            <img src="{{ weibo['user_avatar'] }}">
+                        </div>
+                        <div class="writeruser">
+                            <div class="writername">
+                                <text>{{ weibo['user_name'] }}</text>
+                            </div>
+                            <div class="origin">
+                                <text>{{ weibo['created_at'] }} {{ weibo['region_name'] }} 来自 {{ weibo['source'] }}</text>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="views">
+                        <text>{{ weibo['read_count'] }}阅读</text>
+                    </div>
+                </div>
+                <div class="weibocontent">
+                    <text>{{ weibo['content'] | safe }}</text>
+                </div>
+                {% if weibo['pics'] %}
+                <div class = "weibopics" style="display: block;">
+                    <ul>
+                        {% for pic in weibo['pics'] %}
+                        <li>
+                            <img src="{{ pic }}">
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                {% if weibo['video'] != '' %}
+                <div class = "weibovideo">
+                    <video controls>
+                        <source src="{{ weibo['video'] }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                {% endif %}
+<!--                {% if weibo['reposted_id'] != '' %}-->
+<!--                <div class = "weiborepost">-->
+<!--                    <div class="contentreply">-->
+<!--                        <div class="relpyitem">-->
+<!--                            <text>-->
+<!--                                {{ reply['user_screen_name'] }}{{ reply['text'] | safe }}-->
+<!--                            </text>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                {% endif %}-->
+                <div class="weibofooter">
+                    <div class="footeritem">
+                        <img src="/templates/img/repost.png">
+                        <text>{{ weibo['repost_count'] }}转发</text>
+                    </div>
+                    <div class="footeritem">
+                        <img src="/templates/img/comment.png">
+                        <text>{{ weibo['comment_count'] }}评论</text>
+                    </div>
+                    <div class="footeritem">
+                        <img src="/templates/img/good.png">
+                        <text>{{ weibo['like_count'] }}点赞</text>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
