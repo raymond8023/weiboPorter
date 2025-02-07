@@ -137,9 +137,8 @@ class Weibo:
                     page_urls.update(page_media_info)
                 else:
                     page_urls = page_media_info
-                # hevc_mp4_hd？
-                # 已知ts_ld, ts_hd, mp4_ld, mp4_hd似乎无法下载
-                url_type_list = ['mp4_720p_mp4', 'mp4_hd_mp4', 'stream_url_hd', 'mp4_ld_mp4', 'stream_url']
+                # 已知ts_ld, ts_hd, mp4_ld, mp4_hd等是m3u8类型似乎无法下载
+                url_type_list = ['mp4_720p_mp4', 'mp4_hd_mp4', 'stream_url_hd', 'hevc_mp4_hd', 'mp4_ld_mp4', 'stream_url']
                 for url_type in url_type_list:
                     if url_type in page_urls:
                         self.video = page_urls.get(url_type)
@@ -147,7 +146,7 @@ class Weibo:
                             break
                 self.play_count = page_info.get("play_count")
                 for key in page_urls:
-                    if key not in url_type_list and key != 'duration':
+                    if key not in url_type_list and key not in ['duration', 'mp4_720p', 'mp4_hd', 'mp4_ld']:
                         print(f"未知的url_type: {key}")
 
     def get_long_weibo(self):
