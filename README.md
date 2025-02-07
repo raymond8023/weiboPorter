@@ -52,7 +52,7 @@ pip install -r requirements.txt
     "pic_download": 1,
     "video_download": 1,
     "random_wait_pages": [1, 5],
-    "random_wait_requests": [3, 7],
+    "random_wait_requests": [3, 17],
     "random_wait_seconds": [5, 10],
 	"max_retries": 5,
     "delay_factor": 2,
@@ -64,7 +64,7 @@ pip install -r requirements.txt
 
 下面讲解每个参数的含义与设置方法。
 
-**设置user_id_list**
+**设置user_id_list（必须）**
 
 user_id_list是我们要爬取的微博的user_id，可以是一个，也可以是多个，例如：
 
@@ -72,8 +72,7 @@ user_id_list是我们要爬取的微博的user_id，可以是一个，也可以�
 "user_id_list": ["1223178222", "1669879400", "1729370543"],
 ```
 
-上述代码代表我们要连续爬取user_id分别为“1223178222”、 “1669879400”、 “1729370543”的三个用户的微博，具体如何获取user_id见[如何获取user_id](#如何获取user_id)。
-## 如何获取user_id
+上述代码代表我们要连续爬取user_id分别为“1223178222”、 “1669879400”、 “1729370543”的三个用户的微博。
 
 1.打开网址<https://weibo.cn>，搜索我们要找的人，如"迪丽热巴"，进入她的主页；
 
@@ -85,7 +84,15 @@ user_id_list是我们要爬取的微博的user_id，可以是一个，也可以�
 
 事实上，此微博的user_id也包含在用户主页(<https://weibo.cn/u/1669879400?f=search_0>)中，之所以我们还要点击主页中的"资料"来获取user_id，是因为很多用户的主页不是"<https://weibo.cn/user_id?f=search_0>"的形式，而是"<https://weibo.cn/个性域名?f=search_0>"或"<https://weibo.cn/微号?f=search_0>"的形式。其中"微号"和user_id都是一串数字，如果仅仅通过主页地址提取user_id，很容易将"微号"误认为user_id。
 
-**设置可选项**
+**设置可选项（可不修改）**
+
+```
+    "repost_download": 1,
+    "comment_download": 1,
+    "like_download": 1,
+    "pic_download": 1,
+    "video_download": 1,
+```
 
 repost_download 是否搬运转发
 
@@ -99,27 +106,23 @@ video_download 是否搬运视频
 
 值为1代表是，0代表否，默认全部都是1。
 
-**设置random_wait参数**
-
-random_wait_pages值可以是日期，也可以是整数。如果是日期，代表爬取该日期之后的微博，格式应为“yyyy-mm-dd”，如：
+**设置random_wait参数（可不修改）**
 
 ```
     "random_wait_pages": [1, 5],
-    "random_wait_requests": [3, 7],
+    "random_wait_requests": [3, 17],
     "random_wait_seconds": [5, 10],
 ```
 
 random_wait_pages表示每爬取random.randint(1,5)页，会触发一次等待
 
-random_wait_requests表示每请求random.randint(3,7)次，会触发一次等待
+random_wait_requests表示每请求random.randint(3,17)次，会触发一次等待
 
 random_wait_seconds表示每次等待random.randint(5,10)秒
 
 为了避免被封，默认值较保守，如有必要可以自行调整
 
-**设置下载重试参数**
-
-query_list是一个关键词字符串列表或以`,`分隔关键词的字符串，用于指定关键词搜索爬取，若为空`[]`或`""`则爬取全部微博。例如要爬取用户包含“梦想”和“希望”的微博，则设定如下：
+**设置下载重试参数（可不修改）**
 
 ```
 	"max_retries": 5,
@@ -135,17 +138,13 @@ request_timeout表示最大等待时间是30秒
 
 这三个参数一般不用修改
 
+**设置cookie（必须）**
 
-**设置cookie**
-
-cookie为可选参数，即可填可不填，具体区别见[添加cookie与不添加cookie的区别](#添加cookie与不添加cookie的区别可选)。cookie默认配置如下：
+使用自己的cookie可搬运仅自己可见或好友可见的微博。
 
 ```
 "cookie": "your cookie",
 ```
-
-如果想要设置cookie，可以按照[如何获取cookie](#如何获取cookie可选)中的方法，获取cookie，并将上面的"your cookie"替换成真实的cookie即可。
-## 如何获取cookie（可选）
 
 1.用Chrome打开<https://passport.weibo.cn/signin/login>；
 
@@ -158,16 +157,13 @@ cookie为可选参数，即可填可不填，具体区别见[添加cookie与不�
 4.依此点击Chrome开发者工具中的Network->Name中的weibo.cn->Headers->Request Headers，"Cookie:"后的值即为我们要找的cookie值，复制即可，如图所示：
 ![](https://github.com/dataabc/media/blob/master/weiboSpider/images/cookie3.png)
 
-**设置only_localhost**
-
-only_localhost，取值范围是csv、json、post、mongo、mysql和sqlite，分别代表将结果写入csv、json文件，通过POST发出，MongoDB、MySQL和SQLite数据库。write_mode
-可以同时包含这些取值中的一个或几个，如：
+**设置only_localhost（可不修改）**
 
 ```
-"download_repost": 1,
+"only_localhost": 0,
 ```
 
-值为1，表示搬运微博转发；值为0，表示不搬运微博转发。
+值为1，仅支持localhost访问；默认为0，表示可以从其他地址访问。
 
 ### 4.运行脚本
 
@@ -183,4 +179,4 @@ only_localhost，取值范围是csv、json、post、mongo、mysql和sqlite，分
 * 由于微博评论格式调整（大约2016年7月前后），更早期的评论数据只能用另一种方式搬运，某些情况下无法完全获得（官网也不显示）。因为结合了两种方式，评论的创建时间格式不一样，需要在使用时区分处理。
 
 ## 特别感谢
-本项目爬取方式综合参考了weibo-crawler和weiboSpider的爬取方式。
+本项目参考了weibo-crawler和weiboSpider，特此感谢。

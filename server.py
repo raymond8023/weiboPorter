@@ -1,8 +1,6 @@
-from flask import Flask, request, jsonify, send_from_directory, render_template
-from modules.utils import random_wait
+from flask import Flask, request, send_from_directory, render_template
 import sqlite3
 from contextlib import closing
-from datetime import datetime
 import os
 from modules.config import config
 from bs4 import BeautifulSoup
@@ -167,7 +165,7 @@ class Server:
                                    comments=comments_dict, likes=likes_dict)
 
     def run(self, port=80):
-        # webbrowser.open(f'http://localhost:{port}/')
+        webbrowser.open(f'http://localhost:{port}/')
         # 启动服务器
         if config.only_localhost:
             self.app.run(host='localhost', port=port)  # 仅本机访问

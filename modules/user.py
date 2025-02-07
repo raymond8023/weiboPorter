@@ -2,8 +2,6 @@ from modules.utils import handle_request, download_one_file, sqlite_upsert_objec
 from modules.config import config
 import os
 from modules.weibo import File
-import sqlite3
-from contextlib import closing
 
 
 class User:
