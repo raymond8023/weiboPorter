@@ -125,6 +125,7 @@ class Weibo:
             topic: 超话，不抓取 page_pic.url, page_url, page_title, content1
             place: 地点，不抓取
             webpage： 网页，不抓取
+            hongbao： 红包，不抓取
             """
             type_list = ['video', 'search_topic', 'article', 'topic', 'place', 'webpage']
             if page_info["type"] not in type_list:
@@ -153,8 +154,12 @@ class Weibo:
         """单独获取单个微博的mblog"""
         url = f"https://m.weibo.cn/detail/{self.id}"
         result = handle_request(url, 'text')
-        json_str = re.search(r'\$render_data\s*=\s*(\[.*?\])\s*\[\d*\]\s*\|\|\s*\{\};', result, re.DOTALL).group(1)
-        return json.loads(json_str)[0]['status']
+        json_str = re.search(r'\$render_data\s*=\s*(\[.*?\])\s*\[\d*\]\s*\|\|\s*\{\};', result, re.DOTALL)
+        if json_str:
+            json_str = json_str.group(1)
+            return json.loads(json_str)[0]['status']
+        else:
+            return self.mblog
 
 class Repost:
     def __init__(self, weibo_id, data):

@@ -180,4 +180,4 @@ request_timeout表示最大等待时间是30秒
 * 由于微博评论格式调整（大约2016年7月前后），更早期的评论数据只能用另一种方式搬运，某些情况下无法完全获得（官网也不显示）。因为结合了两种方式，评论的创建时间格式不一样，需要在使用时区分处理。
 
 ## 特别感谢
-* 本项目参考了weibo-crawler和weiboSpider，特此感谢。
+* 本项目参考了<https://github.com/dataabc/weibo-crawler>和<https://github.com/dataabc/weiboSpider>，特此感谢。

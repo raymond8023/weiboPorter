@@ -1,0 +1,5 @@
+requests==2.32.0
+lxml==5.3.0
+tqdm==4.66.3
+beautifulsoup4==4.12.3
+Flask==3.1.0
