@@ -82,3 +82,4 @@ weibo/
 .idea/
 **/__pycache__/
 config.json.bak
+tst.py
