@@ -2,12 +2,13 @@
 
 - [weiboPorter](#weiboporter-微博搬运工)
   - [功能](#功能)
-  - [运行环境](#运行环境)
   - [使用说明](#使用说明)
     - [1.搬运脚本](#1搬运脚本)
     - [2.安装依赖](#2安装依赖)
     - [3.程序设置](#3程序设置)
     - [4.运行脚本](#4运行脚本)
+  - [注意事项](#注意事项)
+  - [特别感谢](#特别感谢)
 
 ## 功能
 项目出于备份微博的初衷，旨在爬取指定用户（通过user_id）所有微博及相关转发、评论、点赞（可选）内容到本地，通过sqlite保存。为了便于查看，可以启动服务器端，按照m.weibo.cn类似的风格在本地复现。主要功能包括：
@@ -54,7 +55,7 @@ pip install -r requirements.txt
     "random_wait_pages": [1, 5],
     "random_wait_requests": [3, 17],
     "random_wait_seconds": [5, 10],
-	"max_retries": 5,
+    "max_retries": 5,
     "delay_factor": 2,
     "request_timeout": 10,
     "cookie": "",
@@ -179,4 +180,4 @@ request_timeout表示最大等待时间是30秒
 * 由于微博评论格式调整（大约2016年7月前后），更早期的评论数据只能用另一种方式搬运，某些情况下无法完全获得（官网也不显示）。因为结合了两种方式，评论的创建时间格式不一样，需要在使用时区分处理。
 
 ## 特别感谢
-本项目参考了weibo-crawler和weiboSpider，特此感谢。
+* 本项目参考了weibo-crawler和weiboSpider，特此感谢。
