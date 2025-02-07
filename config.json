@@ -1,0 +1,16 @@
+{
+    "user_id_list": [""],
+    "repost_download": 1,
+    "comment_download": 1,
+    "like_download": 1,
+    "pic_download": 1,
+    "video_download": 1,
+    "random_wait_pages": [1, 5],
+    "random_wait_requests": [3, 17],
+    "random_wait_seconds": [5, 10],
+	"max_retries": 5,
+    "delay_factor": 2,
+    "request_timeout": 30,
+    "cookie": "",
+    "only_localhost": 0
+}

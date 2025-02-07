@@ -78,7 +78,6 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 # for this project
-config.json
 weibo/
 .idea/
 **/__pycache__/
