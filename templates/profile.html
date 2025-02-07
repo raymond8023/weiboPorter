@@ -25,7 +25,7 @@
                     </div>
                     <div class="user">
                         <div class="name">
-                            <text>{{ user['nickname'] }}</text>
+                            <span>{{ user['nickname'] }}</span>
                             {% if user['gender'] == 'm' %}
                             <img src="/templates/img/male.png">
                             {% else %}
@@ -33,14 +33,14 @@
                             {% endif %}
                             <div class="createtime">（注册时间：{{ user['registration'] }}）</div>
                         </div>
-                        {% if user['birthday'] != '' %}
-                        <div class="bio"><text>生日：{{ user['birthday'] }}</text></div>
+                        {% if user['birthday'] %}
+                        <div class="bio"><span>生日：{{ user['birthday'] }}</span></div>
                         {% endif %}
-                        {% if user['location'] != '' %}
-                        <div class="bio"><text>位置：{{ user['location'] }}</text></div>
+                        {% if user['location'] %}
+                        <div class="bio"><span>位置：{{ user['location'] }}</span></div>
                         {% endif %}
-                        {% if user['introduction'] != '' %}
-                        <div class="bio"><text>简介：{{ user['introduction'] }}</text></div>
+                        {% if user['introduction'] %}
+                        <div class="bio"><span>简介：{{ user['introduction'] }}</span></div>
                         {% endif %}
                     </div>
                 </div>
@@ -64,20 +64,23 @@
         </div>
         <div class="card" id="nomoredata" style="display: none;">
             <div class="showall">
-                <text>没有更多数据</text>
+                <span>没有更多数据</span>
             </div>
         </div>
+    </div>
+    <div id="fullscreen-container">
+        <img id="fullscreen-image" src="" alt="全屏图片">
     </div>
     <script>
         let isLoading = false; // 是否正在加载数据
         let page = 0; // 当前页码
         let hasMoreData = true; // 是否还有更多数据
-        let weiboList, nomoredataElement, timer;
+        let timer;
+        const weiboList = document.getElementById("weibo-list");
+        const nomoredataElement = document.getElementById('nomoredata');
 
         // 监听 DOMContentLoaded 事件，确保 DOM 加载完成后执行
         document.addEventListener("DOMContentLoaded", function () {
-            weiboList = document.getElementById("weibo-list");
-            nomoredataElement = document.getElementById('nomoredata');
             loadMoreData();
         });
 
@@ -114,16 +117,38 @@
                         // 将获取的数据显示在页面上
                         weiboList.innerHTML += data; // 格式化显示数据
                     }
+                    // bindImageClickEvent();
                 })
                 .catch(error => {
                     // 处理错误
                     console.error("获取数据失败:", error);
-                    weiboList.textContent = "数据加载失败，请稍后重试。";
+                    weiboList.spanContent = "数据加载失败，请稍后重试。";
                 });
             // 更新页码
             page++;
             isLoading = false;
         }
+
+        // 事件委托：绑定事件
+        document.addEventListener('click', function (event) {
+            if (event.target.closest('#weibo-list .thumbnail')) {
+                // console.log(event);
+                if (event.target.tagName === 'IMG') {
+                    event.stopPropagation(); // 阻止事件冒泡
+                    event.preventDefault();  // 阻止默认行为
+                    fullscreenImage.src = event.target.src; // 设置大图的 src
+                    fullscreenContainer.style.display = 'block'; // 显示全屏容器
+                }
+            }
+        }, true);
+
+        // 获取元素用于全屏展示图片
+        const fullscreenContainer = document.getElementById('fullscreen-container');
+        const fullscreenImage = document.getElementById('fullscreen-image');
+        // 点击全屏容器时隐藏全屏图片
+        fullscreenContainer.addEventListener('click', function () {
+            this.style.display = 'none'; // 隐藏全屏容器
+        });
     </script>
 </body>
 

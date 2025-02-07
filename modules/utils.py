@@ -30,38 +30,22 @@ def check_cookie():
     # 尝试取用户页看能成功不
     url = f'https://m.weibo.cn/profile/{config.user_id_list[0]}'
     result = handle_request(url , 'text')
-    uid = re.search(r"uid:\s*'([^']*)'", result).group(1)
-    if uid != '':
-        # 检查是否有过期时间字段
-        if 'ALF' in cookies:
-            expires_time = datetime.fromtimestamp(int(cookies['ALF']))  # 获取过期时间
-            current_time = datetime.now()
-            # 判断是否过期或即将过期（小于12个小时）
-            if (expires_time - current_time).total_seconds() / 3600 > 12:
-                print("cookie 正常")
-                return
-            else:
-                raise Exception(f"cookie 过期或即将过期，过期时间: {expires_time}")
+    uid = re.search(r"uid:\s*'([^']*)'", result)
+    if uid:
+        uid = uid.group(1)
+        if uid != '':
+            # 检查是否有过期时间字段
+            if 'ALF' in cookies:
+                expires_time = datetime.fromtimestamp(int(cookies['ALF']))  # 获取过期时间
+                current_time = datetime.now()
+                # 判断是否过期或即将过期（小于12个小时）
+                if (expires_time - current_time).total_seconds() / 3600 > 12:
+                    print("cookie 正常")
+                    return
+                else:
+                    raise Exception(f"cookie 过期或即将过期，过期时间: {expires_time}")
     else:
         raise Exception("cookie 或 user_id 无效")
-
-# def retry(func, *args, **kwargs):
-#     """反复尝试执行函数 func，最多尝试 config.retry[0] 次。"""
-#     retries = 0
-#     while retries < config.max_retries:
-#         try:
-#             result = func(*args, **kwargs)  # 尝试执行函数
-#             return result  # 如果成功，返回结果
-#         except Exception as e:
-#             retries += 1
-#             print(f"尝试 {retries}/{config.max_retries} 失败: {e} func={func.__name__}, args={args}, kwargs={kwargs}")
-#             if retries < config.max_retries:
-#                 sleep(config.delay_factor ** retries)  # 等待一段时间后重试
-#             else:
-#                 error_file = f'{config.user_dir}/retry_failed.txt'
-#                 with open(error_file, 'a', encoding='utf-8-sig') as f:
-#                     f.write(f'func={func.__name__}, args={args}, kwargs={kwargs}\n')
-#                 print(f'retry failed: {e} func={func.__name__}, args={args}, kwargs={kwargs}')
 
 def handle_request(url, return_type='html'):
     """处理requests，返回type类型的数据，加入指数退让的retry机制"""
@@ -105,8 +89,28 @@ def download_one_file(file, force=False):
             session = requests.Session()
             session.mount(file.url, HTTPAdapter(max_retries=RETRY_STRATEGY))
             downloaded = session.get(file.url, timeout=config.request_timeout)
+            # 如果没有扩展名，就从返回的header中尝试获取扩展名
+            if not bool(os.path.splitext(file.file_path)[1]):
+                content_type = downloaded.headers.get('Content-Type', '').lower()
+                if 'image/jpeg' in content_type:
+                    file.file_path += '.jpg'
+                elif 'image/png' in content_type:
+                    file.file_path += '.png'
+                elif 'video/mp4' in content_type:
+                    file.file_path += '.mp4'
+                elif 'video/quicktime' in content_type:
+                    file.file_path += '.mov'
+                elif 'video/webm' in content_type:
+                    file.file_path += '.webm'
+                elif 'image/gif' in content_type:
+                    file.file_path += '.gif'
+                elif 'text/html' in content_type:
+                    file.file_path += '.txt'
             with open(file.file_path, 'wb') as f:
                 f.write(downloaded.content)
+            file.is_finish = True
+            return 1
+        elif os.path.isfile(file.file_path):
             file.is_finish = True
             return 1
     except Exception as e:

@@ -19,7 +19,7 @@
                     </div>
                     <div class="user">
                         <div class="name">
-                            <text>{{ user['nickname'] }}</text>
+                            <span>{{ user['nickname'] }}</span>
                             {% if user['gender'] == 'm' %}
                             <img src="/templates/img/male.png">
                             {% else %}
@@ -27,14 +27,14 @@
                             {% endif %}
                             <div class="createtime">（注册时间：{{ user['registration'] }}）</div>
                         </div>
-                        {% if user['birthday'] != '' %}
-                        <div class="bio"><text>生日：{{ user['birthday'] }}</text></div>
+                        {% if user['birthday'] %}
+                        <div class="bio"><span>生日：{{ user['birthday'] }}</span></div>
                         {% endif %}
-                        {% if user['location'] != '' %}
-                        <div class="bio"><text>位置：{{ user['location'] }}</text></div>
+                        {% if user['location'] %}
+                        <div class="bio"><span>位置：{{ user['location'] }}</span></div>
                         {% endif %}
-                        {% if user['introduction'] != '' %}
-                        <div class="bio"><text>简介：{{ user['introduction'] }}</text></div>
+                        {% if user['introduction'] %}
+                        <div class="bio"><span>简介：{{ user['introduction'] }}</span></div>
                         {% endif %}
                     </div>
                 </div>

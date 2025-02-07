@@ -25,7 +25,7 @@ body {
     cursor: pointer;
 }
 
-.topbar text {
+.topbar span {
     font-size: 1.3rem;
     display: flex;
     align-items: center;
@@ -104,7 +104,7 @@ body {
     align-items: center;
 }
 
-.name text {
+.name span {
     font-size: 1.6rem;
     color: #333;
 }
@@ -124,7 +124,7 @@ body {
     padding-top: 0.8rem;
 }
 
-.bio text {
+.bio span {
     font-size: 1rem;
     color: #999;
 }
@@ -140,13 +140,13 @@ body {
 
 .weiboitem {
     flex: 1; 
-    text-align: center;
+    span-align: center;
     padding: 10px; 
     color: #333;
     margin: 0 10px; 
 }
 
-.weibotopbar text {
+.weibotopbar span {
     font-size: 1rem;
     color: #999;
 }
@@ -182,20 +182,15 @@ body {
     align-items: center;
 }
 
-.writername text {
+.writername span {
     font-size: 1.1rem;
     color: #333;
-}
-
-.origin text {
-    font-size: 0.9rem;
-    color: #999;
 }
 
 .views {
     display: flex;
     border-radius: 0.25rem;
-    text-align: center;
+    span-align: center;
     align-items: center;
     justify-content: center;
     width: 7rem;
@@ -203,7 +198,7 @@ body {
     box-shadow: 0.1rem 0.1rem 0.1rem rgba(0, 0, 0, 0.2); /* 阴影效果 */
 }
 
-.views text {
+.views span {
     font-size: 0.9rem;
     color: #999
 }
@@ -213,7 +208,7 @@ body {
     cursor: auto;
 }
 
-.weibocontent text {
+.weibocontent span {
     font-size: 1.25rem;
     color: #333;
 }
@@ -244,9 +239,27 @@ body {
     display: block;
 }
 
+.weibovideo {
+    position: relative; /* 使子元素可以相对于这个容器定位 */
+    display: inline-block; /* 确保只有内容宽度，而不是100%宽度 */
+}
+
+
 .weibovideo video {
     padding-top: 1rem;
     width: 20rem;
+    height: auto;
+}
+
+.video-play-count {
+    position: absolute; /* 绝对定位 */
+    top: 1.5rem; /* 距离顶部的距离 */
+    right: 0.5rem; /* 距离右侧的距离 */
+    background-color: rgba(0, 0, 0, 0.5); /* 半透明背景色 */
+    color: white; /* 文字颜色 */
+    padding: 0.3rem; /* 内边距 */
+    border-radius: 0.3rem; /* 圆角 */
+    font-size: 0.875rem; /* 根据实际情况调整文字大小 */
 }
 
 .weibofooter {
@@ -265,7 +278,7 @@ body {
     margin-right: 0.2rem;
 }
 
-.footeritem text {
+.footeritem span {
     margin-right: 2rem;
     color: #a5aeb5;
 }
@@ -275,7 +288,7 @@ body {
     
 }
 
-.footeritem.active text {
+.footeritem.active span {
     color: #697480;
 }
 
@@ -312,7 +325,7 @@ body {
     align-items: center;
 }
 
-.contentuser text {
+.contentuser span {
     font-size: 1.1rem;
     color: #333;
 }
@@ -321,12 +334,12 @@ body {
     width: 100%;
 }
 
-.contenttext {
+.contentspan {
     margin-top: 0.5rem;
     cursor: auto;
 }
 
-.contenttext text {
+.contentspan span {
     font-size: 1.25rem;
     color: #333;
 }
@@ -335,9 +348,10 @@ body {
     margin-top: 0.5rem;
     padding: 0.8rem;
     background: #f7f7f7;
+    cursor: auto;
 }
 
-.contentreply text {
+.contentreply span {
     font-size: 1.1rem;
     color: #333;
 }
@@ -346,8 +360,13 @@ body {
     margin-top: 0.5rem;
 }
 
-.replymore text {
+.replymore span {
     color: #507daf;
+}
+
+.origin span {
+    font-size: 0.9rem;
+    color: #999;
 }
 
 .contentfoot {
@@ -358,7 +377,7 @@ body {
     margin-top: 0.7rem;
 }
 
-.contentfoot text {
+.contentfoot span {
     font-size: 0.9rem;
     color: #999;
 }
@@ -374,7 +393,7 @@ body {
     align-items: center;
 }
 
-.contentlike text {
+.contentlike span {
     margin: 0.2rem;
 }
 
@@ -384,4 +403,44 @@ body {
   font-size: 1.1rem;
   text-align: center;
   cursor: pointer;
+}
+
+#fullscreen-container {
+    display: none; /* 默认隐藏 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9); /* 半透明黑色背景 */
+    z-index: 1000; /* 确保在最上层 */
+    span-align: center;
+    cursor: pointer; /* 点击关闭 */
+}
+
+/* 全屏图片样式 */
+#fullscreen-image {
+    max-width: 100%;
+    max-height: 100%;
+    margin: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+a {
+    color: #507daf;
+    text-decoration: none;
+}
+
+/* 覆盖.surl-text类的样式以确保链接文本按照期望显示 */
+a .surl-text {
+    font-size: inherit; /* 或者指定你想要的尺寸 */
+    color: inherit; /* 使用父元素的颜色 */
+}
+
+.relpyitem .originspan{
+    font-size: 0.9rem;
+    color: #999;
 }

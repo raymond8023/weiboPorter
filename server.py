@@ -6,9 +6,10 @@ from datetime import datetime
 import os
 from modules.config import config
 from bs4 import BeautifulSoup
-
+import webbrowser
 
 PAGE_SIZE = 10
+
 
 class Server:
     def __init__(self):
@@ -19,7 +20,6 @@ class Server:
         self.get_user_list()
         self.app = Flask(__name__)
         self.setup_routes()
-
 
     def get_user_list(self):
         user_dirs = [d for d in os.listdir('./weibo') if os.path.isdir(os.path.join('./weibo', d))]
@@ -45,7 +45,7 @@ class Server:
                 result = cursor.fetchall()
                 self.mappings_dict = {row[0]: row[1] for row in result}
 
-    def setup_routes(self): # 定义路由
+    def setup_routes(self):  # 定义路由
         # 提供静态文件服务
         @self.app.route('/<path:path>')
         def serve_static(path):
@@ -67,7 +67,7 @@ class Server:
             for user in self.user_list:
                 if user['id'] == str(user_id):  # 检查用户 ID
                     self.cur_user = user
-                    break   # 找到目标用户
+                    break  # 找到目标用户
                 else:
                     msg = "未找到目标用户!"
                     return render_template('error.html', msg=msg)
@@ -87,6 +87,13 @@ class Server:
                         # 将字段中的url映射成file_path
                         for weibo_dict in weibos_dict:
                             self.parser_url(weibo_dict)
+                            if weibo_dict['reposted_id']:
+                                cursor.execute('SELECT * FROM weibos WHERE id = ? ', (weibo_dict['reposted_id'],))
+                                reposted = cursor.fetchone()
+                                columns = [column[0] for column in cursor.description]
+                                reposted_dict = dict(zip(columns, reposted))
+                                self.parser_url(reposted_dict)
+                                weibo_dict['reposted'] = reposted_dict
                 return render_template('ajax.html', user=self.cur_user, weibos=weibos_dict)
             else:
                 # 没有page就返回基础页面
@@ -120,14 +127,30 @@ class Server:
                     comments = cursor.fetchall()
                     columns = [column[0] for column in cursor.description]
                     comments_dict = [dict(zip(columns, row)) for row in comments]
+
+                    # 获取所有点赞
+                    cursor.execute(
+                        'SELECT * FROM likes WHERE weibo_id = ?', (weibo_id,))
+                    likes = cursor.fetchall()
+                    columns = [column[0] for column in cursor.description]
+                    likes_dict = [dict(zip(columns, row)) for row in likes]
                 self.parser_url(weibo_dict)
+                if weibo_dict['reposted_id']:
+                    cursor.execute('SELECT * FROM weibos WHERE id = ? ', (weibo_dict['reposted_id'],))
+                    reposted = cursor.fetchone()
+                    columns = [column[0] for column in cursor.description]
+                    reposted_dict = dict(zip(columns, reposted))
+                    self.parser_url(reposted_dict)
+                    weibo_dict['reposted'] = reposted_dict
                 for repost in reposts_dict:
                     self.parser_url(repost)
                 for comment in comments_dict:
                     self.parser_url(comment)
+                for like in likes_dict:
+                    self.parser_url(like)
                 i = 0
                 while i < len(comments_dict):
-                    if comments_dict[i]['root_id'] != "":
+                    if comments_dict[i]['root_id']:
                         if comments_dict[i]['id'] == comments_dict[i]['root_id']:
                             j = i
                             comments_dict[j]['reply'] = []
@@ -137,24 +160,25 @@ class Server:
                             del comments_dict[i]
                     else:
                         i += 1
-            if self.cur_user['id'] != str(weibo_dict['user_id']):
-                msg = "目标用户与微博用户不匹配!"
-                return render_template('error.html', msg=msg)
-            print(weibo_dict)
-            return render_template('weibo.html', user=self.cur_user, weibo=weibo_dict, reposts=reposts_dict, comments=comments_dict)
+            # if self.cur_user['id'] != str(weibo_dict['user_id']):
+            #     msg = "目标用户与微博用户不匹配!"
+            #     return render_template('error.html', msg=msg)
+            return render_template('weibo.html', user=self.cur_user, weibo=weibo_dict, reposts=reposts_dict,
+                                   comments=comments_dict, likes=likes_dict)
 
     def run(self, port=80):
-        # webbrowser.open_new(f'http://localhost:{port}/')
+        # webbrowser.open(f'http://localhost:{port}/')
         # 启动服务器
         if config.only_localhost:
-            self.app.run(host='localhost', port=port) # 仅本机访问
+            self.app.run(host='localhost', port=port)  # 仅本机访问
         else:
-            self.app.run(host='0.0.0.0', port=port) # 可外部访问
+            self.app.run(host='0.0.0.0', port=port)  # 可外部访问
 
     def parser_url(self, dictionary):
         # user_avatar
         if 'user_avatar' in dictionary and dictionary['user_avatar']:
-            dictionary['user_avatar'] = self.mappings_dict.get(os.path.basename(dictionary['user_avatar'].split('?')[0]), dictionary['user_avatar']).replace('./', '/')
+            dictionary['user_avatar'] = self.mappings_dict.get(os.path.basename(dictionary['user_avatar'].split('?')[0]),
+                                                               dictionary['user_avatar']).replace('./', '/')
         # text
         if 'content' in dictionary and dictionary['content']:
             soup = BeautifulSoup(dictionary['content'], 'html.parser')
@@ -170,7 +194,8 @@ class Server:
         if 'pics' in dictionary and dictionary['pics']:
             dictionary['pics'] = dictionary['pics'].split(',')
             for i in range(len(dictionary['pics'])):
-                dictionary['pics'][i] = self.mappings_dict.get(os.path.basename(dictionary['pics'][i].split('?')[0]), dictionary['pics'][i]).replace('./', '/')
+                dictionary['pics'][i] = self.mappings_dict.get(os.path.basename(dictionary['pics'][i].split('?')[0]), dictionary['pics'][i]).replace(
+                    './', '/')
         # video
         if 'video' in dictionary and dictionary['video']:
             dictionary['video'] = self.mappings_dict.get(os.path.basename(dictionary['video'].split('?')[0]), dictionary['video']).replace('./', '/')
@@ -180,9 +205,3 @@ if __name__ == '__main__':
     # 创建 Server 实例并运行
     server = Server()
     server.run()
-
-
-
-
-
-

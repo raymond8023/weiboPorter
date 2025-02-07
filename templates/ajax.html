@@ -1,7 +1,7 @@
             {% for weibo in weibos %}
             <div class="card" onclick="window.location.href='/weibo/{{ weibo['id'] }}'">
-                {% if weibo['visibility'] != '' %}
-                <div class="weibotopbar"><text>{{ weibo['visibility'] }}</text></div>
+                {% if weibo['visibility'] %}
+                <div class="weibotopbar"><span>{{ weibo['visibility'] }}</span></div>
                 {% endif %}
                 <div class="weiboheader">
                     <div class="writer">
@@ -10,62 +10,91 @@
                         </div>
                         <div class="writeruser">
                             <div class="writername">
-                                <text>{{ weibo['user_name'] }}</text>
+                                <span>{{ weibo['user_name'] }}</span>
                             </div>
                             <div class="origin">
-                                <text>{{ weibo['created_at'] }} {{ weibo['region_name'] }} 来自 {{ weibo['source'] }}</text>
+                                <span>{{ weibo['created_at'] }}
+                                    {% if weibo['region_name'] %}
+                                    {{ weibo['region_name'] }}
+                                    {% endif %}
+                                    {% if weibo['source'] %}
+                                    来自 {{ weibo['source'] }}
+                                    {% endif %}
+                                </span>
                             </div>
                         </div>
                     </div>
                     <div class="views">
-                        <text>{{ weibo['read_count'] }}阅读</text>
+                        <span>{% if weibo['read_count'] %}{{ weibo['read_count'] }}{% endif %}阅读</span>
                     </div>
                 </div>
                 <div class="weibocontent">
-                    <text>{{ weibo['content'] | safe }}</text>
+                    <span>{{ weibo['content'] | safe }}</span>
                 </div>
                 {% if weibo['pics'] %}
                 <div class = "weibopics" style="display: block;">
                     <ul>
                         {% for pic in weibo['pics'] %}
                         <li>
-                            <img src="{{ pic }}">
+                            <img class="thumbnail" src="{{ pic }}">
                         </li>
                         {% endfor %}
                     </ul>
                 </div>
                 {% endif %}
-                {% if weibo['video'] != '' %}
+                {% if weibo['video'] %}
                 <div class = "weibovideo">
                     <video controls>
                         <source src="{{ weibo['video'] }}" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
+                    <span class="video-play-count">{{ weibo['play_count'] }}</span>
                 </div>
                 {% endif %}
-<!--                {% if weibo['reposted_id'] != '' %}-->
-<!--                <div class = "weiborepost">-->
-<!--                    <div class="contentreply">-->
-<!--                        <div class="relpyitem">-->
-<!--                            <text>-->
-<!--                                {{ reply['user_screen_name'] }}{{ reply['text'] | safe }}-->
-<!--                            </text>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--                {% endif %}-->
+                {% if weibo['reposted_id'] %}
+                <div class = "weiborepost" onclick="window.location.href='/weibo/{{ weibo['reposted_id'] }}'; event.stopPropagation();">
+                    <div class="contentreply">
+                        <div class="relpyitem">
+                            <span>
+                                <a href="https://m.weibo.cn/profile/{{ weibo['reposted']['user_id'] }}">@{{ weibo['reposted']['user_name'] }}: </a>
+                                {{ weibo['reposted']['content'] | safe }}
+                            </span>
+                            {% if weibo['reposted']['pics'] %}
+                            <div class = "weibopics" style="display: block;">
+                                <ul>
+                                    {% for pic in weibo['reposted']['pics'] %}
+                                    <li>
+                                        <img class="thumbnail" src="{{ pic }}">
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            {% endif %}
+                            {% if weibo['reposted']['video'] %}
+                            <div class = "weibovideo">
+                                <video controls>
+                                    <source src="{{ weibo['reposted']['video'] }}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                                <span class="video-play-count">{{ weibo['reposted']['play_count'] }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
                 <div class="weibofooter">
                     <div class="footeritem">
                         <img src="/templates/img/repost.png">
-                        <text>{{ weibo['repost_count'] }}转发</text>
+                        <span>{{ weibo['repost_count'] }}转发</span>
                     </div>
                     <div class="footeritem">
                         <img src="/templates/img/comment.png">
-                        <text>{{ weibo['comment_count'] }}评论</text>
+                        <span>{{ weibo['comment_count'] }}评论</span>
                     </div>
                     <div class="footeritem">
-                        <img src="/templates/img/good.png">
-                        <text>{{ weibo['like_count'] }}点赞</text>
+                        <img src="/templates/img/like.png">
+                        <span>{{ weibo['like_count'] }}点赞</span>
                     </div>
                 </div>
             </div>

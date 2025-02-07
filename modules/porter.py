@@ -39,24 +39,16 @@ class Porter:
                 random_wait()
                 self.random_wait_pages = random.randint(*config.random_wait_pages)
 
-            # self.init_lists()
-            # self.get_one_page(page) # 初步获取page页的weibo
-            # self.update_weibo_list()    # 调整、补充细节
-            # self.download_files()
-            # self.insert_sqlite()
-
-            page = 1
-
+            # page = 170  # 调试用
             # 按照相同逻辑逐页搬运
             self.init_lists()
             self.get_one_page(page) # 初步获取page页的weibo
             self.update_weibo_list()    # 调整、补充细节
             self.download_files()
             self.insert_sqlite()
-
             print(f'共搬运{self.ported_count}条微博')
-
-            break   # 调试用
+            # break   # 调试用
+        print(f'搬运{self.user.nickname}微博完毕！')
 
     def init_lists(self):
         """每爬取一页前重置相关list"""
@@ -238,13 +230,14 @@ class Porter:
     def parse_download(self, obj):
         """从搬运的信息中提取需要下载的文件信息Weibo, Repost, Comment, Like"""
         # user_avatar
-        if hasattr(obj, 'user_avatar'):
+        if hasattr(obj, 'user_avatar') and obj.user_avatar:
             if os.path.basename(obj.user_avatar.split('?')[0]) not in self.file_list:
                 file = File(obj.user_avatar, 'avatar')
                 self.download_list.append(file)
                 self.file_list.append(file.file_name)
         # text
         if hasattr(obj, 'content') and obj.content:
+            # print(obj.content)
             soup = BeautifulSoup(obj.content, 'html.parser')
             # 查找所有 <span class="url-icon"> 中的 <img> 标签
             for span in soup.find_all('span', class_='url-icon'):
@@ -255,19 +248,19 @@ class Porter:
                         self.download_list.append(file)
                         self.file_list.append(file.file_name)
         # pic/pics
-        if hasattr(obj, 'pic') and obj.pic:
+        if hasattr(obj, 'pic') and obj.pic and config.pic_download:
             if os.path.basename(obj.pic.split('?')[0]) not in self.file_list:
                 file = File(obj.pic, 'pic')
                 self.download_list.append(file)
                 self.file_list.append(file.file_name)
-        if hasattr(obj, 'pics') and obj.pics:
+        if hasattr(obj, 'pics') and obj.pics and config.pic_download:
             for url in obj.pics.split(','):
                 if os.path.basename(url.split('?')[0]) not in self.file_list:
                     file = File(url, 'pic')
                     self.download_list.append(file)
                     self.file_list.append(file.file_name)
         # video
-        if hasattr(obj, 'video') and obj.video:
+        if hasattr(obj, 'video') and obj.video and config.video_download:
             if os.path.basename(obj.video.split('?')[0]) not in self.file_list:
                 file = File(obj.video, 'video')
                 self.download_list.append(file)

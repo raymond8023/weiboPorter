@@ -1,9 +1,5 @@
-from lxml import etree
-from modules.utils import handle_request, download_one_file, sqlite_upsert_object, try_format_time
+from modules.utils import handle_request, try_format_time
 from modules.config import config
-import sqlite3
-from contextlib import closing
-from ignore import ignore_list
 import re
 import json
 import os
@@ -40,7 +36,7 @@ class Weibo:
         if mblog.get('isLongText') or mblog.get('pic_num', 0) > 9:  # 被删除的微博取不到，所以用get
             self.mblog = self.get_long_weibo()
         # self.print_dict(mblog)
-        self.check_keys()
+        # self.check_keys() # 检查相关字段
         # 解析构建实例
         self.parse_weibo()
         # 清理过渡属性
@@ -127,15 +123,21 @@ class Weibo:
             search_topic、: #话题卡片，不抓取 page_pic.url, page_url, page_title
             article: 头条文章，可以不抓取 page_pic.url, page_url, content1
             topic: 超话，不抓取 page_pic.url, page_url, page_title, content1
+            place: 地点，不抓取
+            webpage： 网页，不抓取
             """
-            type_list = ['video', 'search_topic', 'article', 'topic']
+            type_list = ['video', 'search_topic', 'article', 'topic', 'place', 'webpage']
             if page_info["type"] not in type_list:
                 print(f"未知的page_info['type']: {page_info['type']}")
             if page_info["type"] == "video":
                 page_media_info = page_info.get("media_info", {})
                 page_urls = page_info.get("urls", {})
-                page_urls.update(page_media_info)
+                if page_urls:
+                    page_urls.update(page_media_info)
+                else:
+                    page_urls = page_media_info
                 # hevc_mp4_hd？
+                # 已知ts_ld, ts_hd, mp4_ld, mp4_hd似乎无法下载
                 url_type_list = ['mp4_720p_mp4', 'mp4_hd_mp4', 'stream_url_hd', 'mp4_ld_mp4', 'stream_url']
                 for url_type in url_type_list:
                     if url_type in page_urls:
@@ -166,7 +168,7 @@ class Repost:
         self.user_name = data['user']['screen_name']
         self.user_avatar = data['user']['profile_image_url']
         self.bid = data['bid']
-        self.region_name = data['region_name']
+        self.region_name = data.get('region_name', None)
         self.like_count = data['attitudes_count']
 
 class Comment:
@@ -202,14 +204,23 @@ class Like:
 class File:
     def __init__(self, url, category):
         # 初始化所有固定属性
-        self.url = url
+        if url.startswith('//'):
+            self.url = 'https:' + url
+        else:
+            self.url = url
         self.category = category
         self.file_name = os.path.basename(url.split('?')[0])
         self.file_path = f"{config.user_dir}/{category}/{self.file_name}"
         self.is_finish = False
-        if '.' not in self.file_name:
-            print(f"{self.url}: {self.file_path} 没有扩展名...")
+        if self.url.startswith('https://api.youku.com'):
+            self.file_name = self.url.split('?')[1].split('=')[1]
+            self.file_path = f"{config.user_dir}/{category}/{self.file_name}"
+        # if not bool(os.path.splitext(self.file_name)[1]):
+        #     print(f"{self.url}: {self.file_path} 没有扩展名...")
 
     def __str__(self):
-        return f'[{self.category}]{self.file_path}: {self.url}, {self.is_finish}'
+        if hasattr(self, 'url') :
+            return f'[{self.category}]{self.file_path}: {self.url}, {self.is_finish}'
+        else:
+            return f'[{self.category}]{self.file_path}: {self.is_finish}'
 

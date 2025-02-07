@@ -12,7 +12,7 @@
     <div class="container">
         <div class="topbar">
             <img src="/templates/img/left.png" onclick="history.back()">
-            <text>微博正文</text>
+            <span>微博正文</span>
             <div class="null"></div>
         </div>
         <div id="weibo-list">
@@ -24,32 +24,95 @@
                         </div>
                         <div class="writeruser">
                             <div class="writername">
-                                <text>{{ weibo['user_name'] }}</text>
+                                <span>{{ weibo['user_name'] }}</span>
                             </div>
                             <div class="origin">
-                                <text>{{ weibo['created_at'] }} 来自 {{ weibo['source'] }}</text>
+                                <span>{{ weibo['created_at'] }}
+                                    {% if weibo['region_name'] %}{{ weibo['region_name'] }}{% endif %}
+                                    {% if weibo['source'] %}来自 {{ weibo['source'] }}{% endif %}
+                                </span>
                             </div>
                         </div>
                     </div>
                     <div class="views">
-                        <text>阅读</text>
+                        <span>{% if weibo['read_count'] %}{{ weibo['read_count'] }}{% endif %}阅读</span>
                     </div>
                 </div>
                 <div class="weibocontent">
-                    <text>{{ weibo['content'] | safe }}</text>
+                    <span>{{ weibo['content'] | safe }}</span>
                 </div>
+                {% if weibo['pics'] %}
+                <div class = "weibopics" style="display: block;">
+                    <ul>
+                        {% for pic in weibo['pics'] %}
+                        <li>
+                            <img class="thumbnail" src="{{ pic }}">
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                {% if weibo['video'] %}
+                <div class = "weibovideo">
+                    <video controls>
+                        <source src="{{ weibo['video'] }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <span class="video-play-count">
+                        {% if weibo['play_count'] %}
+                        {{ weibo['play_count'] }}
+                        {% endif %}
+                    </span>
+                </div>
+                {% endif %}
+                {% if weibo['reposted_id'] %}
+                <div class = "weiborepost" onclick="window.location.href='/weibo/{{ weibo['reposted_id'] }}'; event.stopPropagation();">
+                    <div class="contentreply">
+                        <div class="relpyitem">
+                            <span>
+                                <a href="https://m.weibo.cn/profile/{{ weibo['reposted']['user_id'] }}">@{{ weibo['reposted']['user_name'] }}: </a>
+                                {{ weibo['reposted']['content'] | safe }}
+                            </span>
+                            {% if weibo['reposted']['pics'] %}
+                            <div class = "weibopics" style="display: block;">
+                                <ul>
+                                    {% for pic in weibo['reposted']['pics'] %}
+                                    <li>
+                                        <img class="thumbnail" src="{{ pic }}">
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            {% endif %}
+                            {% if weibo['reposted']['video'] %}
+                            <div class = "weibovideo">
+                                <video controls>
+                                    <source src="{{ weibo['reposted']['video'] }}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                                <span class="video-play-count">
+                                    {% if weibo['play_count'] %}
+                                    {{ weibo['reposted']['play_count'] }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
                 <div class="weibofooter">
                     <div class="footeritem" data-action="repost">
                         <img src="/templates/img/repost.png">
-                        <text>转发{{ weibo['repost_count'] }}</text>
+                        <span>转发{{ weibo['repost_count'] }}</span>
                     </div>
                     <div class="footeritem" data-action="comment">
                         <img src="/templates/img/comment.png">
-                        <text>评论{{ weibo['comment_count'] }}</text>
+                        <span>评论{{ weibo['comment_count'] }}</span>
                     </div>
-                    <div class="footeritem" data-action="good">
-                        <img src="/templates/img/good.png">
-                        <text>点赞{{ weibo['like_count'] }}</text>
+                    <div class="footeritem" data-action="like">
+                        <img src="/templates/img/like.png">
+                        <span>点赞{{ weibo['like_count'] }}</span>
                     </div>
                 </div>
             </div>
@@ -63,18 +126,18 @@
                     </div>
                     <div class="content">
                         <div class="contentuser">
-                            <text>{{ repost['user_name'] }}</text>
+                            <span>{{ repost['user_name'] }}</span>
                         </div>
-                        <div class="contenttext">
-                            <text>{{ repost['content'] | safe }}</text>
+                        <div class="contentspan">
+                            <span>{{ repost['content'] | safe }}</span>
                         </div>
                         <div class="contentfoot">
                             <div class="contenttime">
-                                <text>{{ repost['created_at'] }}</text>
+                                <span>{{ repost['created_at'] }} {{ repost['region_name'] }} 来自 {{ repost['source'] }}</span>
                             </div>
                             <div class="contentlike">
-                                <img src="/img/good.png">
-                                <text>{{ repost['like_count'] }}</text>
+                                <img src="/templates/img/like.png">
+                                <span>{{ repost['like_count'] }}</span>
                             </div>
                         </div>
                     </div>
@@ -91,27 +154,47 @@
                     </div>
                     <div class="content">
                         <div class="contentuser">
-                            <text>{{ comment['user_name'] }}</text>
+                            <span>{{ comment['user_name'] }}</span>
                         </div>
-                        <div class="contenttext">
-                            <text>{{ comment['content'] | safe }}</text>
+                        <div class="contentspan">
+                            <span>{{ comment['content'] | safe }}</span>
                         </div>
+                        {% if comment['pic'] %}
+                        <div class = "weibopics" style="display: block;">
+                            <ul>
+                                <li>
+                                    <img class="thumbnail" src="{{ comment['pic'] }}">
+                                </li>
+                            </ul>
+                        </div>
+                        {% endif %}
                         {% if comment['reply'] %}
                         <div class="contentreply">
                             {% for reply in comment['reply'] %}
                             <div class="relpyitem">
-                                <text>{{ reply['user_name'] }}:{{ reply['content'] | safe }}</text>
+                                <span>{{ reply['user_name'] }}:{{ reply['content'] | safe }}</span>
+                                <span class="originspan">{{ reply['created_at'] }} {{ reply['source'] }}</span>
                             </div>
+                                {% if reply['pic'] %}
+                                reply的图片并没有保存在pic中，因此这个情况好像不会出现
+                                <div class = "weibopics" style="display: block;">
+                                    <ul>
+                                        <li>
+                                            <img class="thumbnail" src="{{ reply['pic'] }}">
+                                        </li>
+                                    </ul>
+                                </div>
+                                {% endif %}
                             {% endfor %}
                         </div>
                         {% endif %}
                         <div class="contentfoot">
                             <div class="contenttime">
-                                <text>{{ comment['created_at'] }}</text>
+                                <span>{{ comment['created_at'] }} {% if comment['source'] %}{{ comment['source'] }}{% endif %}</span>
                             </div>
                             <div class="contentlike">
-                                <img src="/templates/img/good.png">
-                                <text>{{ comment['like_count'] }}</text>
+                                <img src="/templates/img/like.png">
+                                <span>{% if comment['like_count'] %}{{ comment['like_count'] }}{% endif %}</span>
                             </div>
                         </div>
                     </div>
@@ -120,15 +203,32 @@
             {% endfor %}
         </div>
         <div id="like-container" style="display: none">
+            {% for like in likes %}
+            <div class="card">
+                <div class="contentitem">
+                    <div class="contentavatar">
+                        <img src="{{ like['user_avatar'] }}">
+                    </div>
+                    <div class="contentuser">
+                        <span>{{ like['user_name'] }}</span>
+                        <div class="origin">
+                            <span>　{{ like['created_at'] }} {% if like['source'] %}来自 {{ like['source'] }}{% endif %}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
         </div>
     </div>
+    <div id="fullscreen-container">
+        <img id="fullscreen-image" src="" alt="全屏图片">
+    </div>
     <script>
+        const tabDivs = document.querySelectorAll('.footeritem');
+        const repostContainer = document.getElementById('repost-container');
+        const commentContainer = document.getElementById('comment-container');
+        const likeContainer = document.getElementById('like-container');
         document.addEventListener('DOMContentLoaded', function() {
-            const tabDivs = document.querySelectorAll('.footeritem');
-            const repostContainer = document.getElementById('repost-container');
-            const commentContainer = document.getElementById('comment-container');
-            const likeContainer = document.getElementById('like-container');
-
             // 初始化第一个标签为选中状态
             tabDivs[1].classList.add('active');
 
@@ -149,6 +249,26 @@
                     }
                 });
             });
+        });
+
+        document.addEventListener('click', function (event) {
+            if (event.target.closest('#weibo-list .thumbnail')) {
+                console.log(event);
+                if (event.target.tagName === 'IMG') {
+                    event.stopPropagation(); // 阻止事件冒泡
+                    event.preventDefault();  // 阻止默认行为
+                    fullscreenImage.src = event.target.src; // 设置大图的 src
+                    fullscreenContainer.style.display = 'block'; // 显示全屏容器
+                }
+            }
+        }, true);   // 这里如果不加参数true处理的优先级就不对，也可以把onclick改到这里绑定事件委托一并处理来解决
+
+        // 获取元素用于全屏展示图片
+        const fullscreenContainer = document.getElementById('fullscreen-container');
+        const fullscreenImage = document.getElementById('fullscreen-image');
+        // 点击全屏容器时隐藏全屏图片
+        fullscreenContainer.addEventListener('click', function () {
+            this.style.display = 'none'; // 隐藏全屏容器
         });
     </script>
 </body>
