@@ -13,7 +13,14 @@ class Config:
         return cls._instance
 
     def __init__(self):
-        config_path = os.path.join(os.path.dirname(__file__), os.path.pardir,  "config.json")
+        # try:
+        #     # PyInstaller creates a temp folder and stores path in _MEIPASS
+        #     base_path = sys._MEIPASS
+        # except Exception:
+        #     # 如果不是由PyInstaller打包的，则返回常规路径
+        #     base_path = os.path.abspath(".")
+        # config_path = os.path.join(base_path, "config.json")
+        config_path = './config.json'
         if not hasattr(self, 'initialized'):  # 避免重复初始化
             try:
                 with open(config_path, "r", encoding="utf-8") as f:

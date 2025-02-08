@@ -5,9 +5,9 @@ import os
 from modules.config import config
 from bs4 import BeautifulSoup
 import webbrowser
+import sys
 
 PAGE_SIZE = 10
-
 
 class Server:
     def __init__(self):
@@ -16,7 +16,19 @@ class Server:
         self.mappings_dict = {}
 
         self.get_user_list()
-        self.app = Flask(__name__)
+        if getattr(sys, 'frozen', False):
+            # 如果是打包后的exe，使用sys.executable来找到exe文件的路径
+            base_dir = os.path.dirname(sys.executable)
+        else:
+            # 如果是脚本方式运行，使用__file__来找到当前脚本的路径
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+        # print(base_dir)
+        self.app = Flask(
+            __name__,
+            template_folder=os.path.join(base_dir, 'templates'),  # 模板文件夹路径
+            static_folder=base_dir  # 静态文件夹路径
+        )
+        # self.app = Flask(__name__)
         self.setup_routes()
 
     def get_user_list(self):
@@ -47,7 +59,7 @@ class Server:
         # 提供静态文件服务
         @self.app.route('/<path:path>')
         def serve_static(path):
-            return send_from_directory('.', path)
+            return send_from_directory(self.app.static_folder, path)
 
         # 首页接口
         @self.app.route('/', methods=['GET'])
@@ -66,9 +78,9 @@ class Server:
                 if user['id'] == str(user_id):  # 检查用户 ID
                     self.cur_user = user
                     break  # 找到目标用户
-                else:
-                    msg = "未找到目标用户!"
-                    return render_template('error.html', msg=msg)
+            else:
+                msg = "未找到目标用户!"
+                return render_template('error.html', msg=msg)
             self.get_mappings_dict()
             if 'page' in request.args:
                 # 按照page取weibos，返回局部weibos数据后拼接到原页面中

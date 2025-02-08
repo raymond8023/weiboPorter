@@ -83,3 +83,9 @@ weibo/
 **/__pycache__/
 config.json.bak
 tst.py
+server.exe
+favicon.ico
+dist/
+build/
+.venv/
+*.spec
